@@ -1,0 +1,79 @@
+<div class="product-detail-container">
+  @if (loading()) {
+    <div class="loading-container">
+      <p-progressSpinner styleClass="custom-spinner"></p-progressSpinner>
+      <p>Cargando producto...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <i class="pi pi-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="back-button" (click)="goBack()" type="button">
+        <i class="pi pi-arrow-left"></i>
+        <span>Volver al catálogo</span>
+      </button>
+    </div>
+  } @else if (product()) {
+    <div class="detail-header">
+      <button class="back-button" (click)="goBack()" type="button">
+        <i class="pi pi-arrow-left"></i>
+        <span>Volver</span>
+      </button>
+    </div>
+
+    <div class="detail-content">
+      <div class="image-section">
+        <div class="image-wrapper">
+          <img 
+            [src]="product()!.image" 
+            [alt]="product()!.title"
+            (error)="onImageError($event)"
+          />
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="product-header">
+          <span class="category" [attr.data-category]="product()!.category.toLowerCase()">
+            {{ product()!.category }}
+          </span>
+          <h1>{{ product()!.title }}</h1>
+          <div class="rating">
+            <div class="stars">
+              <p-rating 
+                [(ngModel)]="product()!.rating.rate" 
+                [readonly]="true" 
+                [cancel]="false"
+              ></p-rating>
+            </div>
+            <span class="rating-text">{{ product()!.rating.rate }} ({{ product()!.rating.count }} reseñas)</span>
+          </div>
+        </div>
+
+        <div class="price-box">
+          <span class="price">{{ product()!.price | currency }}</span>
+        </div>
+
+        <div class="description">
+          <h2>Descripción</h2>
+          <p>{{ product()!.description }}</p>
+        </div>
+
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="label">ID</span>
+            <span class="value">{{ product()!.id }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Categoría</span>
+            <span class="value">{{ product()!.category }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Calificación</span>
+            <span class="value">{{ product()!.rating.rate }} / 5.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,106 @@
+<div class="product-list-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Productos</h1>
+      <p class="subtitle">Explora nuestro catálogo completo</p>
+    </div>
+    <div class="header-actions">
+      <p-dropdown
+        [options]="categories"
+        [(ngModel)]="selectedCategory"
+        (onChange)="onCategoryChange($event)"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Categoría"
+        styleClass="category-dropdown"
+      ></p-dropdown>
+      <div class="search-box">
+        <i class="pi pi-search"></i>
+        <input 
+          type="text" 
+          pInputText 
+          placeholder="Buscar productos..."
+          [value]="searchTerm()"
+          (input)="onSearch($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  @if (productService.loading()) {
+    <div class="loading-container">
+      <p-progressSpinner styleClass="custom-spinner"></p-progressSpinner>
+      <p>Cargando productos...</p>
+    </div>
+  } @else if (productService.error()) {
+    <div class="error-container">
+      <i class="pi pi-exclamation-circle"></i>
+      <p>{{ productService.error() }}</p>
+    </div>
+  } @else {
+    <div class="table-wrapper">
+      <p-table 
+        [value]="productService.filteredProducts()" 
+        [tableStyle]="{ 'min-width': '100%' }"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        styleClass="modern-table"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 80px"></th>
+            <th pSortableColumn="title">Producto <p-sortIcon field="title"></p-sortIcon></th>
+            <th pSortableColumn="price" style="width: 120px">Precio <p-sortIcon field="price"></p-sortIcon></th>
+            <th pSortableColumn="category" style="width: 150px">Categoría <p-sortIcon field="category"></p-sortIcon></th>
+            <th style="width: 100px"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td>
+              <div class="product-image-cell">
+                <img 
+                  [src]="product.image" 
+                  [alt]="product.title"
+                  (error)="onImageError($event)"
+                />
+              </div>
+            </td>
+            <td class="product-name">{{ product.title }}</td>
+            <td class="product-price">{{ product.price | currency }}</td>
+            <td>
+              <span class="category-badge" [attr.data-category]="product.category.toLowerCase()">
+                {{ product.category }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button 
+                class="view-button"
+                (click)="viewDetail(product)"
+                type="button"
+              >
+                <i class="pi pi-arrow-right"></i>
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="empty-message">
+              <i class="pi pi-inbox"></i>
+              <p>No se encontraron productos</p>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <tr>
+            <td colspan="5" class="table-footer">
+              Total: {{ productService.filteredProducts().length }} producto(s)
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  }
+</div>
